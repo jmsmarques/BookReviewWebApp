@@ -1,0 +1,18 @@
+{% extends "base.html" %}
+
+{% block title %}Welcome{% endblock %}
+
+{% block body %}
+<div class="col-lg-6 col-sm-12">
+    <form method="get" action="{{ url_for('registration') }}">
+        <button type="submit">Register</button>
+    </form>
+</div>
+
+<div class="col-lg-6 col-sm-12">
+    <form method="get" action="{{ url_for('log_in') }}">
+        <button type="submit">Log In</button>
+    </form>
+</div>
+
+{% endblock %}

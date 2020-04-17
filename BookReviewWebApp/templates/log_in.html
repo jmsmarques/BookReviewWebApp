@@ -1,0 +1,20 @@
+{% extends "base.html" %}
+
+{% block title %}Log In{% endblock %}
+
+{% block body %}
+    {% if failed %}
+        <div class="alert alert-danger" role="alert">
+            Invalid username or password
+        </div>
+    {% endif %}
+    <div class="row">
+        <form action="{{ url_for('authenticate') }}" method="get">
+            <label for="username">Username:</label><br>
+            <input type="text" name="username"><br>
+            <label for="password">Password:</label><br>
+            <input type="password" name="password"><br>
+            <input type="submit" value="Log In">
+        </form>
+    </div>
+{% endblock %}
