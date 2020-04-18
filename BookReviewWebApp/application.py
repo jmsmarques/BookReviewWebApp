@@ -30,8 +30,7 @@ def index():
             return render_template("index.html", logged_in=False)
         else:
             return render_template("books.html")
-    except KeyError:
-        print("keyError")
+    except KeyError: #special case for when there is no session["used_id"] yet
         return render_template("index.html", logged_in=False)
 
     
