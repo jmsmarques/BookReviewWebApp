@@ -24,54 +24,65 @@ db = scoped_session(sessionmaker(bind=engine))
 
 @app.route("/")
 def index():
-    return render_template("index.html")
+    session.clear()
+    try:
+        if session["user_id"] == None: #user is not logged in
+            return render_template("index.html", logged_in=False)
+        else:
+            return render_template("books.html")
+    except KeyError:
+        print("keyError")
+        return render_template("index.html", logged_in=False)
+
+    
 
 
 @app.route("/registration/")
 def registration():
-    return render_template("register.html")
+    return render_template("register.html", logged_in=False)
 
 @app.route("/registration/register/", methods=["POST"])
 def register():
+
+    #get data from form
+    first_name = request.form.get("first_name")
+    last_name = request.form.get("last_name")
+    password = request.form.get("password")
     username = request.form.get("username")
-
+        
     try:
-        db.query.filter_by(username=username).all()
-    except AttributeError:
-        #get data from form
-        first_name = request.form.get("first_name")
-        last_name = request.form.get("last_name")
-        password = request.form.get("password")
-
         user = User(first_name=first_name, last_name=last_name, username=username, password=password)
         db.add(user)
         db.commit()
-        return render_template("books.html")
-
-    #username already taken
-    return render_template("index.html")
+        session["user_id"] = user.id
+        return render_template("books.html", logged_in=False)
+    except: #username already taken
+        return render_template("index.html")
 
 @app.route("/login/")
 def log_in():
-    return render_template("log_in.html", failed=False)
+    return render_template("log_in.html", failed=False, logged_in=False)
+
+@app.route("/logout/")
+def logout():
+    session["user_id"] = None
+    return render_template("index.html", logged_in=False)
 
 @app.route("/authenticate/")
 def authenticate():
     username = request.form.get("username")
     password = request.form.get("password")
 
-    try:
-        db.query.filter(and_(username=username, password=password)).all()
-    except: #authentication failed
-        return render_template("log_in.html", failed=True) 
-    
-    #authentication succesfull
-    return render_template("books.html")
+    user = db.query(User).filter(and_(username=username, password=password)).all()
+    print(user)
+    if user != None: #authentication failed
+        return render_template("log_in.html", failed=True, logged_in=False) 
+    else: #authentication succesfull
+        return render_template("books.html", logged_in=True)
 
 
 
 
 @app.route("/books/<int:book_id>")
-def get_book():
-
+def get_book(book_id):
     return render_template("index.html")
