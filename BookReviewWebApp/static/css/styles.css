@@ -23,4 +23,11 @@
   transform: translateY(4px);
 }
 
+.book-link {
+  color: black;
+}
+.book-link:hover {
+  color: grey;
+}
+
 /*# sourceMappingURL=styles.css.map */

@@ -14,7 +14,7 @@ def main():
     reader = csv.reader(f)
     next(reader)
     for isbn, title, author, year in reader:
-        book = Book(isbn=isbn, title=title, author=author, year=year, nr_reviews=0)
+        book = Book(isbn=isbn, title=title, author=author, year=year, nr_reviews=0, average=0)
         db.session.add(book)
         print(f"Added book called {book.title} written by {book.author} on {book.year} with the isbn {book.isbn}.")
     db.session.commit()

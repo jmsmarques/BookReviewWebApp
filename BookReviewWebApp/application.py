@@ -24,17 +24,19 @@ db = scoped_session(sessionmaker(bind=engine))
 
 @app.route("/")
 def index():
-    session.clear()
     try:
+        req = db()
+        print(session["user_id"])
         if session["user_id"] == None: #user is not logged in
-            return render_template("index.html", logged_in=False)
+            return render_template("index.html", logged_in=False)   
         else:
-            return render_template("books.html")
+            user = req.query(User).get(session["user_id"])
+            books = req.query(Book).order_by(name).all()
+            return render_template("books.html", logged_in=True, books=books, user=user.first_name)
     except KeyError: #special case for when there is no session["used_id"] yet
         return render_template("index.html", logged_in=False)
-
-    
-
+    finally:
+        db.remove()
 
 @app.route("/registration/")
 def registration():
@@ -42,6 +44,7 @@ def registration():
 
 @app.route("/registration/register/", methods=["POST"])
 def register():
+    req = db()
 
     #get data from form
     first_name = request.form.get("first_name")
@@ -51,12 +54,15 @@ def register():
         
     try:
         user = User(first_name=first_name, last_name=last_name, username=username, password=password)
-        db.add(user)
-        db.commit()
+        req.add(user)
+        req.commit()
         session["user_id"] = user.id
-        return render_template("books.html", logged_in=False)
+        books = req.query(Book).order_by(name).all()
+        return render_template("books.html", logged_in=True, books=books, user=first_name) #return page with the books
     except: #username already taken
         return render_template("index.html")
+    finally:
+        db.remove()
 
 @app.route("/login/")
 def log_in():
@@ -67,21 +73,54 @@ def logout():
     session["user_id"] = None
     return render_template("index.html", logged_in=False)
 
-@app.route("/authenticate/")
+@app.route("/authenticate/", methods=["POST"])
 def authenticate():
+    req = db()
+
     username = request.form.get("username")
     password = request.form.get("password")
 
-    user = db.query(User).filter(and_(username=username, password=password)).all()
-    print(user)
-    if user != None: #authentication failed
+    user = req.query(User).filter(and_(User.username==username, User.password==password)).first()
+    db.remove()
+    if user == None: #authentication failed
         return render_template("log_in.html", failed=True, logged_in=False) 
     else: #authentication succesfull
-        return render_template("books.html", logged_in=True)
+        session["user_id"] = user.id
+        books = req.query(Book).order_by(name).all()
+        return render_template("books.html", logged_in=True, books=books, user=user.first_name)
 
-
-
-
-@app.route("/books/<int:book_id>")
+@app.route("/books/<int:book_id>/")
 def get_book(book_id):
-    return render_template("index.html")
+    try:
+        req = db()
+        if session["user_id"] == None: #user is not logged in
+            return render_template("index.html", logged_in=False)
+        else:
+            book = req.query(Book).get(book_id)
+            users = req.query(User).all()
+            return render_template("book_details.html", logged_in=True, book=book, users=users)
+    except KeyError: #special case for when there is no session["used_id"] yet
+        return render_template("index.html", logged_in=False)
+    finally:
+        db.remove()
+
+@app.route("/books/add_review", methods=["POST"])
+def add_review():
+    try:
+        req = db()
+        if session["user_id"] == None: #user is not logged in
+            return render_template("index.html", logged_in=False)
+        else:
+            book_id = request.form.get("book")
+            book = req.query(Book).get(book_id)
+            score = int(request.form.get("score"))
+            review = request.form.get("review_desc")
+            new_review = book.add_review(score, review, session['user_id'])
+            req.add(new_review)
+            req.commit()
+            books = req.query(Book).order_by(name).all()
+            return render_template("books.html", logged_in=True, books=books, review_added=True)
+    except KeyError as err: #special case for when there is no session["used_id"] yet
+        return render_template("index.html", logged_in=False)
+    finally:
+        db.remove()

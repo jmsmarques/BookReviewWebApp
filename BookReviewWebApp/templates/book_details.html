@@ -1,8 +1,68 @@
 {% extends "base.html" %}
 
-{% block title %}{% endblock %}
+{% block title %}Book Details{% endblock %}
 
 {% block body %}
+    <div class="row">
+        <div class="row">
+            <h1>Book Details</h1>
+        </div>
+    </div>
 
-
+    <div class="row">
+        <div class="col">
+            <ul style="width=100%;" class="list-group">
+                <li class="list-group-item list-group-item-action">
+                    <span>Isbn: </span> {{ book.isbn }}
+                </li>   
+                <li class="list-group-item list-group-item-action">
+                    <span>Title: </span> {{ book.title }}               
+                </li>  
+                <li class="list-group-item list-group-item-action">
+                    <span>Author: </span> {{ book.author }}               
+                </li>  
+                <li class="list-group-item list-group-item-action">
+                    <span>Year: </span> {{ book.year }}          
+                </li>  
+                <li class="list-group-item list-group-item-action">
+                    <span>Average score: </span> {{ book.average }}               
+                </li>  
+                <li class="list-group-item list-group-item-action">
+                    <span>Nr of reviews: </span> {{ book.nr_reviews }}
+                </li>  
+                <h4>Reviews:</h4>
+                <ul style="width=100%;" class="list-group">
+                    {% for review in book.reviews %}
+                        <li class="list-group-item list-group-item-action">
+                            <span>Score: </span> {{ review.score }}<br>
+                            <span>Description: </span> {{ review.review }}<br>
+                            <span>Reviewer: </span> {{  }}<br>
+                        </li> 
+                    {% endfor %}
+                </ul>
+            </ul>
+        </div>
+    </div>
+    <div class="row" style="margin-top: 20px; margin-bottom:50px">
+        <div class="col">
+            <form action="{{ url_for('add_review') }}" method="post">
+                <input type="hidden" name="book" value={{ book.id }}>
+                <div class="form-group">
+                    <label for="review_desc">Add a Review:</label><br>
+                    <textarea class="form-control" type="text" name="review_desc" placeholder="Write your review here..."></textarea>
+                </div>
+                <div class="form-group">
+                    <label for="score">Score:</label><br>
+                    <select class="form-control" name="score">
+                        <option value="1">1</option>
+                        <option value="2">2</option>
+                        <option value="3">3</option>
+                        <option value="4">4</option>
+                        <option value="5">5</option>
+                    </select>          
+                </div>
+                <button type="submit" class="btn btn-primary">Add Review</button>
+            </form>
+        </div>
+    </div>
 {% endblock %}

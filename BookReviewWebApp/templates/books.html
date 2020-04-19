@@ -1,7 +1,33 @@
 {% extends "base.html" %}
 
-{% block title %}Log In{% endblock %}
+{% block title %}Books{% endblock %}
 
 {% block body %}
-<h1>Success</h1>
+    <div class="row">
+        <h1>Hello {{ user }}</h1>        
+    </div>
+    <div class="row">
+        <h2>Books</h2>
+    </div>
+    {% if review_added %}
+        <div class="alert alert-danger" role="alert">
+            Review added
+        </div>
+    {% endif %}
+    <div class="row">
+        <div class="col">
+            <ul style="width=100%;" class="list-group">
+                {% for book in books %}
+                    <li class="list-group-item list-group-item-action">
+                        <a class="book-link" href="{{ url_for('get_book', book_id=book.id) }}">
+                            <span>
+                                Isbn: {{ book.isbn }}<br>
+                                Title: {{ book.title }}
+                            </span>
+                        </a>  
+                    </li>       
+                {% endfor %}
+            </ul>
+        </div>
+    </div>
 {% endblock %}
