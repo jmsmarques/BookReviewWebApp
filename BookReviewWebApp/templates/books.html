@@ -3,6 +3,14 @@
 {% block title %}Books{% endblock %}
 
 {% block body %}
+    <div class="row button-div">
+        <form class="form-inline active-cyan-4" action="{{ url_for('books') }}" method="get">
+            <div class="form-group">
+                <input class="form-control" type="text" name="search_parameter" placeholder="Search...">
+                <button class="btn btn-elegant btn-rounded" type="submit">Search</button>
+            </div>
+        </form>
+    </div>
     <div class="row">
         <h1>Hello {{ user }}</h1>        
     </div>
@@ -19,10 +27,11 @@
             <ul style="width=100%;" class="list-group">
                 {% for book in books %}
                     <li class="list-group-item list-group-item-action">
-                        <a class="book-link" href="{{ url_for('get_book', book_id=book.id) }}">
+                        <a class="book-link" href="{{ url_for('get_book', book_isbn=book.isbn) }}">
                             <span>
                                 Isbn: {{ book.isbn }}<br>
-                                Title: {{ book.title }}
+                                Title: {{ book.title }}<br>
+                                Author: {{ book.author }}
                             </span>
                         </a>  
                     </li>       

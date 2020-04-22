@@ -30,13 +30,13 @@
                 <li class="list-group-item list-group-item-action">
                     <span>Nr of reviews: </span> {{ book.nr_reviews }}
                 </li>  
-                <h4>Reviews:</h4>
+                <small><h1 style="margin-top:5px">Reviews:</h1></small>
                 <ul style="width=100%;" class="list-group">
                     {% for review in book.reviews %}
                         <li class="list-group-item list-group-item-action">
                             <span>Score: </span> {{ review.score }}<br>
                             <span>Description: </span> {{ review.review }}<br>
-                            <span>Reviewer: </span> {{  }}<br>
+                            <span>Reviewer: </span> {{ review.reviewer }} <br>
                         </li> 
                     {% endfor %}
                 </ul>
@@ -46,7 +46,7 @@
     <div class="row" style="margin-top: 20px; margin-bottom:50px">
         <div class="col">
             <form action="{{ url_for('add_review') }}" method="post">
-                <input type="hidden" name="book" value={{ book.id }}>
+                <input type="hidden" name="book" value={{ book.isbn }}>
                 <div class="form-group">
                     <label for="review_desc">Add a Review:</label><br>
                     <textarea class="form-control" type="text" name="review_desc" placeholder="Write your review here..."></textarea>
