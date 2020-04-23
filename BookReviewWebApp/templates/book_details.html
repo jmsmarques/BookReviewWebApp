@@ -45,6 +45,11 @@
     </div>
     <div class="row" style="margin-top: 20px; margin-bottom:50px">
         <div class="col">
+            {% if invalid %}
+                <div class="alert alert-danger" role="alert">
+                    You've already reviewed this book
+                </div>
+            {% endif %}
             <form action="{{ url_for('add_review') }}" method="post">
                 <input type="hidden" name="book" value={{ book.isbn }}>
                 <div class="form-group">

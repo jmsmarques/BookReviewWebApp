@@ -24,19 +24,23 @@
     {% endif %}
     <div class="row">
         <div class="col">
-            <ul style="width=100%;" class="list-group">
-                {% for book in books %}
-                    <li class="list-group-item list-group-item-action">
-                        <a class="book-link" href="{{ url_for('get_book', book_isbn=book.isbn) }}">
-                            <span>
-                                Isbn: {{ book.isbn }}<br>
-                                Title: {{ book.title }}<br>
-                                Author: {{ book.author }}
-                            </span>
-                        </a>  
-                    </li>       
-                {% endfor %}
-            </ul>
+            {% if books|length > 0 %}
+                <ul style="width=100%;" class="list-group">
+                    {% for book in books %}
+                        <li class="list-group-item list-group-item-action">
+                            <a class="book-link" href="{{ url_for('get_book', book_isbn=book.isbn) }}">
+                                <span>
+                                    Isbn: {{ book.isbn }}<br>
+                                    Title: {{ book.title }}<br>
+                                    Author: {{ book.author }}
+                                </span>
+                            </a>  
+                        </li>       
+                    {% endfor %}
+                </ul>
+            {% else %}
+                <h3>No books fit the criteria</h3>
+            {% endif %}
         </div>
     </div>
 {% endblock %}

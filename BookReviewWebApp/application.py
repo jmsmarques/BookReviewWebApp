@@ -96,7 +96,7 @@ def books():
             return render_template("index.html", logged_in=False)
         else:
             search_parameter = request.args.get("search_parameter")
-            books = req.query(Book).filter(or_(Book.isbn.like(f"%{search_parameter}%"), Book.title.like(f"%{search_parameter}%"), Book.author.like(f"%{search_parameter}%"))).order_by(Book.title)
+            books = req.query(Book).filter(or_(Book.isbn.like(f"%{search_parameter}%"), Book.title.like(f"%{search_parameter}%"), Book.author.like(f"%{search_parameter}%"))).order_by(Book.title).all()
             user = req.query(User).get(session["user_id"])
             return render_template("books.html", logged_in=True, books=books, user=user.first_name)
     except KeyError: #special case for when there is no session["used_id"] yet
@@ -113,7 +113,7 @@ def get_book(book_isbn):
         else:
             book = req.query(Book).get(book_isbn)
             users = req.query(User).all()
-            return render_template("book_details.html", logged_in=True, book=book, users=users)
+            return render_template("book_details.html", logged_in=True, book=book)
     except KeyError: #special case for when there is no session["used_id"] yet
         return render_template("index.html", logged_in=False)
     finally:
@@ -127,15 +127,18 @@ def add_review():
             return render_template("index.html", logged_in=False)
         else:
             book_isbn = request.form.get("book")
-            print(f"ISBN: {book_isbn}")
             book = req.query(Book).get(book_isbn)
-            score = int(request.form.get("score"))
-            review = request.form.get("review_desc")
-            new_review = book.add_review(score, review, session['user_id'])
-            req.add(new_review)
-            req.commit()
-            books = req.query(Book).order_by(Book.title).all()
-            return render_template("books.html", logged_in=True, books=books, review_added=True)
+            check = req.query(Review).filter(and_(Review.book_id==book_isbn, Review.reviewer==session["user_id"])).first() #check if the user already reviewed this book
+            if check == None:
+                score = int(request.form.get("score"))
+                review = request.form.get("review_desc")
+                new_review = book.add_review(score, review, session['user_id'])
+                req.add(new_review)
+                req.commit()
+                books = req.query(Book).order_by(Book.title).all()
+                return render_template("books.html", logged_in=True, books=books, review_added=True)
+            else:
+                return render_template("book_details.html", logged_in=True, book=book, invalid=True)
     except KeyError as err: #special case for when there is no session["used_id"] yet
         return render_template("index.html", logged_in=False)
     finally:
