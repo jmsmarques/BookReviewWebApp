@@ -32,13 +32,28 @@
                 </li>  
                 <small><h1 style="margin-top:5px">Reviews:</h1></small>
                 <ul style="width=100%;" class="list-group">
-                    {% for review in book.reviews %}
+                    {% if reviews is not none %}
+                        {% for review in reviews %}
+                            <li class="list-group-item list-group-item-action">
+                                <span>Score: </span> {{ review.score }}<br>
+                                <span>Description: </span> {{ review.review }}<br>
+                                <span>Reviewer: </span> {{ review.reviewer }} <br>
+                            </li> 
+                        {% endfor %}
+                    {% else %}
+                        <small><h2>No reviews yet for this book</h2></small>
+                    {% endif %}
+                </ul>
+                <small><h1 style="margin-top:5px">GoodReads Reviews Data:</h1></small>
+                <ul style="width=100%;" class="list-group">
+                    {% if goodreads_data is not none %}
                         <li class="list-group-item list-group-item-action">
-                            <span>Score: </span> {{ review.score }}<br>
-                            <span>Description: </span> {{ review.review }}<br>
-                            <span>Reviewer: </span> {{ review.reviewer }} <br>
+                            <span>Average Rating: </span> {{ goodreads_data.average_rating }}<br>
+                            <span>Nr of Ratings: </span> {{ goodreads_data.ratings_count }}<br>
                         </li> 
-                    {% endfor %}
+                    {% else %}
+                        <small><h2>No reviews in GoodReads</h2></small>
+                    {% endif %}
                 </ul>
             </ul>
         </div>

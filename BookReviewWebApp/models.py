@@ -23,11 +23,6 @@ class Book(db.Model):
     nr_reviews = db.Column(db.Integer, nullable=False)
     reviews = db.relationship('Review', backref='books', lazy=True)
 
-    def add_review(self, score, review, reviewer):
-        r = Review(score=score, review=review, reviewer=reviewer, book_id=self.isbn)
-        self.nr_reviews = self.nr_reviews + 1
-        self.average = (self.average * (self.nr_reviews - 1) + score) / self.nr_reviews
-        return r
 
 class Review(db.Model):
     __tablename__ = "reviews"
